@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.teleop;
-package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -11,7 +10,12 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 import java.util.function.Supplier;
+
 
 @Configurable
 @TeleOp
@@ -23,7 +27,8 @@ public class Tele {
     private TelemetryManager telemetryM;
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
-    @Override
+    Gamepad gamepad1 = new Gamepad();
+    //@Override
     public void init() {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
@@ -34,18 +39,19 @@ public class Tele {
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
                 .build();
     }
-    @Override
+    //@Override
     public void start() {
         //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
     }
-    @Override
+    //@Override
     public void loop() {
         //Call this once per loop
         follower.update();
         telemetryM.update();
+
         if (!automatedDrive) {
             //Make the last parameter false for field-centric
             //In case the drivers want to use a "slowMode" you can scale the vectors
@@ -83,7 +89,7 @@ public class Tele {
             slowModeMultiplier += 0.25;
         }
         //Optional way to change slow mode strength
-        if (gamepad2.yWasPressed()) {
+        if (gamepad1.yWasPressed()) {
             slowModeMultiplier -= 0.25;
         }
         telemetryM.debug("position", follower.getPose());
