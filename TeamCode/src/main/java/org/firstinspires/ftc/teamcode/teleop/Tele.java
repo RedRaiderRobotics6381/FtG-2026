@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -19,7 +22,7 @@ import java.util.function.Supplier;
 
 @Configurable
 @TeleOp
-public class Tele {
+public class Tele extends OpMode {
     private Follower follower;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive;
@@ -28,6 +31,7 @@ public class Tele {
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
     Gamepad gamepad1 = new Gamepad();
+
     //@Override
     public void init() {
         follower = Constants.createFollower(hardwareMap);
