@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
@@ -11,6 +12,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -28,6 +30,12 @@ public class Tele extends OpMode {
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
     Gamepad gamepad1 = new Gamepad();
+    float leftVert = gamepad1.left_stick_y;
+
+    DcMotor bl;
+    DcMotor fl;
+    DcMotor fr;
+    DcMotor br;
 
     //@Override
     public void init() {
@@ -93,6 +101,13 @@ public class Tele extends OpMode {
         if (gamepad1.yWasPressed()) {
             slowModeMultiplier -= 0.25;
         }
+        if (leftVert != 0){
+            bl.setPower(leftVert);
+            fl.setPower(leftVert);
+            br.setPower(leftVert);
+            fr.setPower(leftVert);
+        }
+
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
