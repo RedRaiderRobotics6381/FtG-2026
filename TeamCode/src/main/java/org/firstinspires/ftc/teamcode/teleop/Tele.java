@@ -32,10 +32,12 @@ public class Tele extends OpMode {
     Gamepad gamepad1 = new Gamepad();
     float leftVert = gamepad1.left_stick_y;
 
-    DcMotor bl;
-    DcMotor fl;
-    DcMotor fr;
-    DcMotor br;
+    DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
+    DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
+    DcMotor fr = hardwareMap.get(DcMotor.class, "fr");
+    DcMotor br = hardwareMap.get(DcMotor.class, "br");
+    DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
+    DcMotor outtake = hardwareMap.get(DcMotor.class, "outtake");
 
     //@Override
     public void init() {
@@ -90,9 +92,16 @@ public class Tele extends OpMode {
             automatedDrive = false;
         }
         //Slow Mode
-        if (gamepad1.rightBumperWasPressed()) {
+        if (gamepad1.dpadDownWasPressed()) {
             slowMode = !slowMode;
         }
+        if(gamepad1.leftBumperWasPressed()){
+            intake.setPower(0.5);
+        }
+        if (gamepad1.rightBumperWasPressed()){
+            outtake.setPower(0.5);
+        }
+
         //Optional way to change slow mode strength
         if (gamepad1.xWasPressed()) {
             slowModeMultiplier += 0.25;
@@ -104,8 +113,8 @@ public class Tele extends OpMode {
         if (leftVert != 0){
             bl.setPower(leftVert);
             fl.setPower(leftVert);
-            br.setPower(leftVert);
-            fr.setPower(leftVert);
+            br.setPower(-leftVert);
+            fr.setPower(-leftVert);
         }
 
         telemetryM.debug("position", follower.getPose());
