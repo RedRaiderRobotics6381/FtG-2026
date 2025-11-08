@@ -14,8 +14,10 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 
 import java.util.function.Supplier;
 
@@ -32,12 +34,7 @@ public class Tele extends OpMode {
     Gamepad gamepad1 = new Gamepad();
     float leftVert = gamepad1.left_stick_y;
 
-    DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
-    DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
-    DcMotor fr = hardwareMap.get(DcMotor.class, "fr");
-    DcMotor br = hardwareMap.get(DcMotor.class, "br");
-    DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-    DcMotor outtake = hardwareMap.get(DcMotor.class, "outtake");
+    DcMotor intake, outtake, br, bl, fr, fl;
 
     //@Override
     public void init() {
@@ -49,6 +46,12 @@ public class Tele extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(45, 98))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
                 .build();
+        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
+        DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
+        DcMotor fr = hardwareMap.get(DcMotor.class, "fr");
+        DcMotor br = hardwareMap.get(DcMotor.class, "br");
+        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
+        DcMotor outtake = hardwareMap.get(DcMotor.class, "outtake");
     }
     //@Override
     public void start() {
