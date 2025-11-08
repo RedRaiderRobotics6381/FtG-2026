@@ -18,7 +18,9 @@ public class Auto extends OpMode {
     private int pathState;
     private final Pose startPose = new Pose(85, 8, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(115, 115, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-
+    private final Pose pickup1Pose = new Pose(37, 121, Math.toRadians(0));
+    private final Pose pickup2Pose = new Pose(43, 130, Math.toRadians(0));
+    private final Pose pickup3Pose = new Pose(49, 135, Math.toRadians(0));
     private Path scorePreload;
     private PathChain grabPickup1, scorePickup1, grabPickup2, scorePickup2, grabPickup3, scorePickup3;
 
