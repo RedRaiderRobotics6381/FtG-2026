@@ -33,6 +33,9 @@ public class Tele extends OpMode {
     private double slowModeMultiplier = 0.5;
     Gamepad gamepad1 = new Gamepad();
     float leftVert = gamepad1.left_stick_y;
+    float leftHor = gamepad1.left_stick_x;
+    float rightVert = gamepad1.right_stick_y;
+    float rightHor = gamepad1.right_stick_x;
 
     DcMotor intake, outtake, br, bl, fr, fl;
 
