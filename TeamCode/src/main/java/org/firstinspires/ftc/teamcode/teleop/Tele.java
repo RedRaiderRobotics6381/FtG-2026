@@ -12,6 +12,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -34,14 +35,20 @@ public class Tele extends OpMode {
     private TelemetryManager telemetryM;
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
+
+    private double currentPosition = 0;
     Gamepad gamepad1 = new Gamepad();
     Gamepad gamepad2 = new Gamepad();
 
-    DcMotor br, bl, fr, fl;
-    DcMotor intake, rightOuttake, leftOuttake;
-    CRServo BLservo = hardwareMap.crservo.get("BLservo");
-    CRServo BRservo = hardwareMap.crservo.get("BRservo");
-    CRServo FRservo = hardwareMap.crservo.get("FRservo");
+    Servo BLservo = hardwareMap.servo.get("BLservo");
+    Servo BRservo = hardwareMap.servo.get("BRservo");
+    Servo FRservo = hardwareMap.servo.get("FRservo");
+
+    ColorSensor colorSensor = hardwareMap.colorSensor.get("");
+
+    DcMotor intake = hardwareMap.dcMotor.get("");
+    DcMotor rightOuttake = hardwareMap.dcMotor.get("");
+    DcMotor leftOuttake = hardwareMap.dcMotor.get("");
 
 
     //@Override
@@ -100,21 +107,6 @@ public class Tele extends OpMode {
         if (gamepad1.dpadDownWasPressed()) {
             slowMode = !slowMode;
         }
-        if (gamepad2.left_bumper) {
-            intake.setPower(1);
-        }
-         if (gamepad2.right_bumper) {
-            intake.setPower(-1);
-        }
-
-        else {
-            intake.setPower(0);
-        }
-
-        if (gamepad1.rightBumperWasPressed()){
-            leftOuttake.setPower(1);
-            rightOuttake.setPower(1);
-        }
 
         //Optional way to change slow mode strength
         if (gamepad1.xWasPressed()) {
@@ -125,9 +117,26 @@ public class Tele extends OpMode {
             slowModeMultiplier -= 0.25;
         }
 
+        if (gamepad2.left_bumper) {intakeOn(0.5);}
+
+
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
+    }
+
+    public void intakeOn(double power) {
+        intake.setPower(power);
+        if (colorSensor.alpha() <  0) {
+            intake.setPower(0);
+            currentPosition = BRservo.getPosition();
+
+            BRservo.setPosition(currentPosition + (double) 1 /3);
+            BLservo.setPosition(currentPosition + (double) 1 /3);
+            FRservo.setPosition(currentPosition + (double) 1 /3);
+        }
+    }
+    public void intakeOff() {
     }
 
 
