@@ -13,6 +13,9 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -32,12 +35,14 @@ public class Tele extends OpMode {
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
     Gamepad gamepad1 = new Gamepad();
-    float leftVert = gamepad1.left_stick_y;
-    float leftHor = gamepad1.left_stick_x;
-    float rightVert = gamepad1.right_stick_y;
-    float rightHor = gamepad1.right_stick_x;
+    Gamepad gamepad2 = new Gamepad();
 
-    DcMotor intake, outtake, br, bl, fr, fl;
+    DcMotor br, bl, fr, fl;
+    DcMotor intake, rightOuttake, leftOuttake;
+    CRServo BLservo = hardwareMap.crservo.get("BLservo");
+    CRServo BRservo = hardwareMap.crservo.get("BRservo");
+    CRServo FRservo = hardwareMap.crservo.get("FRservo");
+
 
     //@Override
     public void init() {
@@ -49,12 +54,6 @@ public class Tele extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(45, 98))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
                 .build();
-        DcMotor bl = hardwareMap.get(DcMotor.class, "bl");
-        DcMotor fl = hardwareMap.get(DcMotor.class, "fl");
-        DcMotor fr = hardwareMap.get(DcMotor.class, "fr");
-        DcMotor br = hardwareMap.get(DcMotor.class, "br");
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        DcMotor outtake = hardwareMap.get(DcMotor.class, "outtake");
     }
     //@Override
     public void start() {
@@ -101,11 +100,20 @@ public class Tele extends OpMode {
         if (gamepad1.dpadDownWasPressed()) {
             slowMode = !slowMode;
         }
-        if(gamepad1.leftBumperWasPressed()){
-            intake.setPower(0.5);
+        if (gamepad2.left_bumper) {
+            intake.setPower(1);
         }
+         if (gamepad2.right_bumper) {
+            intake.setPower(-1);
+        }
+
+        else {
+            intake.setPower(0);
+        }
+
         if (gamepad1.rightBumperWasPressed()){
-            outtake.setPower(0.5);
+            leftOuttake.setPower(1);
+            rightOuttake.setPower(1);
         }
 
         //Optional way to change slow mode strength
@@ -115,12 +123,6 @@ public class Tele extends OpMode {
         //Optional way to change slow mode strength
         if (gamepad1.yWasPressed()) {
             slowModeMultiplier -= 0.25;
-        }
-        if (leftVert != 0){
-            bl.setPower(leftVert);
-            fl.setPower(leftVert);
-            br.setPower(-leftVert);
-            fr.setPower(-leftVert);
         }
 
         telemetryM.debug("position", follower.getPose());

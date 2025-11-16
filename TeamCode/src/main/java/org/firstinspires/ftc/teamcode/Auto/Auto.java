@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.pedropathing.follower.Follower;
@@ -8,19 +9,25 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-
+@Configurable
+@Autonomous
 public class Auto extends OpMode {
+    DcMotor br, bl, fr, fl;
+    //DcMotor intake;
+    //DcMotor outtake;
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-    private final Pose startPose = new Pose(85, 8, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(115, 115, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose pickup1Pose = new Pose(37, 121, Math.toRadians(0));
-    private final Pose pickup2Pose = new Pose(43, 130, Math.toRadians(0));
-    private final Pose pickup3Pose = new Pose(49, 135, Math.toRadians(0));
+    private final Pose startPose = new Pose(77, 7, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(107, 85, Math.toRadians(45)); // Scoring Pose of our robot
+    private final Pose pickup1Pose = new Pose(105, 84, Math.toRadians(0));
+    private final Pose pickup2Pose = new Pose(105, 60, Math.toRadians(0));
+    private final Pose pickup3Pose = new Pose(105, 35, Math.toRadians(0));
     private Path scorePreload;
     private PathChain grabPickup1, scorePickup1, grabPickup2, scorePickup2, grabPickup3, scorePickup3;
 
@@ -28,7 +35,34 @@ public class Auto extends OpMode {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
         scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
 
-    }
+        grabPickup1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup1Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading()).build();
+
+        scorePickup1 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup1Pose, scorePose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+        grabPickup2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .build();
+
+        scorePickup2 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup2Pose, scorePose))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+        grabPickup3 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup3Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
+                .build();
+
+        scorePickup3 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup3Pose, scorePose))
+                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
+                .build();    }
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
@@ -94,24 +128,33 @@ public class Auto extends OpMode {
     @Override
     public void start () {
         opmodeTimer.resetTimer();
-        //setPathState(0);
+        setPathState(0);
     }
     @Override
     public void init() {
-        // These loop the movements of the robot, these must be called continuously in order to work
-        follower.update();
-        autonomousPathUpdate();
-        // Feedback to Driver Hub for debugging
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.update();
+         bl = hardwareMap.get(DcMotor.class, "bl");
+         fl = hardwareMap.get(DcMotor.class, "fl");
+         fr = hardwareMap.get(DcMotor.class, "fr");
+         br = hardwareMap.get(DcMotor.class, "br");
+        bl.setPower(0);
+        fl.setPower(0);
+        br.setPower(0);
+        fr.setPower(0);
+        //DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
+        //DcMotor outtake = hardwareMap.get(DcMotor.class, "outtake");
+        pathTimer = new Timer();
+        opmodeTimer = new Timer();
+        opmodeTimer.resetTimer();
+        follower = Constants.createFollower(hardwareMap);
+        buildPaths();
+        follower.setStartingPose(startPose);
+
     }
 
     @Override
     public void loop() {
 // These loop the movements of the robot, these must be called continuously in order to work
+
         follower.update();
         autonomousPathUpdate();
         // Feedback to Driver Hub for debugging
@@ -120,5 +163,6 @@ public class Auto extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.update();
+
     }
 }
